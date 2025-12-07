@@ -5,40 +5,49 @@ import org.springframework.stereotype.Service;
 import utp.AgroIndustria_Acora.modelo.Cliente;
 import utp.AgroIndustria_Acora.repository.ClienteRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ClienteService {
-    
+
     @Autowired
     private ClienteRepository clienteRepository;
-    
-    public List<Cliente> listarTodos() {
-        return clienteRepository.findAll();
-    }
-    
-    public Optional<Cliente> buscarPorId(Long id) {
-        return clienteRepository.findById(id);
-    }
-    
-    public Cliente guardar(Cliente cliente) {
+
+    /**
+     * Intenta registrar un nuevo cliente en la Base de Datos.
+     * Si el correo ya existe, retorna null.
+     */
+    public Cliente registrarCliente(Cliente cliente) {
+        // 1. Verificar si el correo ya está registrado (Consulta a la BD)
+        Optional<Cliente> existente = clienteRepository.findByCorreo(cliente.getCorreo());
+        
+        if (existente.isPresent()) {
+            return null; // Correo duplicado
+        }
+
+        // 2. Guardar cliente nuevo en MySQL
+        // Nota: En un entorno real, la contraseña se encriptaría (hash) aquí.
         return clienteRepository.save(cliente);
     }
-    
-    public void eliminar(Long id) {
-        clienteRepository.deleteById(id);
-    }
-    
-    public Optional<Cliente> buscarPorEmail(String email) {
-        return clienteRepository.findByEmail(email);
-    }
-    
-    public List<Cliente> listarActivos() {
-        return clienteRepository.findByActivoTrue();
-    }
-    
-    public boolean existeEmail(String email) {
-        return clienteRepository.existsByEmail(email);
+
+    /**
+     * Intenta autenticar a un cliente comparando el correo y la contraseña.
+     * @return El objeto Cliente si las credenciales son correctas, o null si fallan.
+     */
+    public Cliente autenticarCliente(String correo, String password) {
+        // 1. Buscar el cliente por correo
+        Optional<Cliente> clienteOpt = clienteRepository.findByCorreo(correo);
+        
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+            
+            // 2. Comparar la contraseña (texto plano)
+            if (cliente.getContrasenia().equals(password)) {
+                return cliente; // Autenticación exitosa
+            }
+        }
+        
+        // Falla: Cliente no encontrado o contraseña incorrecta
+        return null; 
     }
 }

@@ -1,0 +1,123 @@
+/* login.css - Diseño Final */
+
+body {
+    /* Fondo de campo de olivos de alta calidad */
+    background: url('https://images.unsplash.com/photo-1508264165352-258db2ebd59b?q=80&w=1978&auto=format&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Capa oscura para que el texto resalte sobre la foto */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* Un poco más oscuro para elegancia */
+    z-index: 0;
+}
+
+.card-login {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.96); /* Casi blanco sólido */
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.logo-icon {
+    font-size: 3.5rem;
+    color: #6b8e23; /* Verde Aceituna */
+    display: block;
+    margin-bottom: 10px;
+}
+
+.brand-title {
+    color: #2c3e50;
+    font-weight: 800;
+    font-size: 1.6rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.brand-subtitle {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Estilo de los inputs */
+.form-floating > .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #6b8e23;
+    box-shadow: 0 0 0 0.25rem rgba(107, 142, 35, 0.2);
+}
+
+/* Botón de Ingreso */
+.btn-acora {
+    background-color: #6b8e23;
+    color: white;
+    font-weight: 700;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-acora:hover {
+    background-color: #556b2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(85, 107, 47, 0.3);
+}
+/* =========================================
+   ESTILOS ESPECÍFICOS PARA EL REGISTRO
+   ========================================= */
+
+/* Ajuste para pantallas con scroll (Registro es más alto que Login) */
+body.registro-page {
+    height: auto;
+    min-height: 100vh;
+    padding: 40px 0;
+}
+
+/* Tarjeta de Registro (Más ancha que el login pero controlada) */
+.card-registro {
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    width: 100%;
+    max-width: 550px; /* Ancho controlado para que no se vea gigante */
+    margin: auto;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+/* Ajustes finos para los labels del formulario */
+.form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+    color: #6c757d; /* Gris bootstrap */
+}
+
+/* Ajustes para inputs en el registro */
+.form-control-sm-custom {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}

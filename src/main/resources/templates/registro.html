@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | Agroindustrias Acora</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="/css/login.css" rel="stylesheet">
+</head>
+<body class="registro-page"> <div class="container">
+        <div class="card-registro">
+            
+            <h2 class="text-success fw-bold mb-1">CREAR CUENTA</h2>
+            <p class="text-muted small mb-4">Únete a Agroindustrias Acora</p>
+
+            <form action="/registro" method="POST" class="row g-2 text-start">
+                
+                <div class="col-6">
+                    <label class="form-label fw-bold">Nombre</label>
+                    <input type="text" class="form-control form-control-sm-custom" name="nombre" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-bold">Apellido</label>
+                    <input type="text" class="form-control form-control-sm-custom" name="apellido" required>
+                </div>
+
+                <div class="col-4">
+                    <label class="form-label fw-bold">Tipo</label>
+                    <select class="form-select form-control-sm-custom" name="tipo_documento">
+                        <option value="DNI">DNI</option>
+                        <option value="RUC">RUC</option>
+                        <option value="CE">C.E.</option>
+                    </select>
+                </div>
+                <div class="col-8">
+                    <label class="form-label fw-bold">N° Documento</label>
+                    <input type="text" class="form-control form-control-sm-custom" name="numero_documento" required>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold">Celular / Teléfono</label>
+                    <input type="tel" class="form-control form-control-sm-custom" name="telefono" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Dirección de Entrega</label>
+                    <input type="text" class="form-control form-control-sm-custom" name="direccion" placeholder="Ej. Av. Los Olivos 123" required>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <label class="form-label fw-bold">Correo Electrónico</label>
+                    <input type="email" class="form-control form-control-sm-custom" name="correo" placeholder="nombre@correo.com" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Contraseña</label>
+                    <input type="password" class="form-control form-control-sm-custom" name="contrasenia" placeholder="******" required>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-acora w-100">
+                        REGISTRARSE
+                    </button>
+                </div>
+
+                <div class="col-12 text-center mt-3">
+                    <a href="/login" class="small text-secondary text-decoration-none">
+                        ¿Ya tienes cuenta? <span class="fw-bold text-success">Ingresa aquí</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
