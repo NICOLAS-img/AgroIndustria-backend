@@ -1,4 +1,4 @@
-
+// src/main/java/utp/AgroIndustria_Acora/modelo/TipoPago.java
 package utp.AgroIndustria_Acora.modelo;
 
 import jakarta.persistence.*;

@@ -1,143 +1,98 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal | Agroindustrias Acora</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Gestión de Empleados | Acora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Tu CSS -->
     <link href="/css/admindashboard.css" rel="stylesheet">
 </head>
 <body>
 
-    <!-- MENÚ LATERAL -->
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="bi bi-tree-fill fs-1 text-success"></i>
             <div class="brand-title">Olivos Acora</div>
-            <small class="text-muted">Panel Admin</small>
         </div>
-        
         <a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Resumen</a>
-        <!-- ESTA PESTAÑA ESTÁ ACTIVA -->
         <a href="#" class="active"><i class="bi bi-people-fill"></i> Empleados</a>
         <a href="/admin/productos"><i class="bi bi-box-seam"></i> Productos</a>
         <a href="/admin/reportes"><i class="bi bi-file-earmark-text"></i> Reportes</a>
-        
         <div class="mt-5 border-top border-secondary pt-3">
             <a href="/login" class="text-danger"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <div class="main-content">
-        <h2 class="mb-4 text-secondary fw-bold">Gestión de Personal</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-secondary">Gestión de Personal</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEmpleado" onclick="limpiarFormulario()">
+                <i class="bi bi-plus-circle"></i> Nuevo Empleado
+            </button>
+        </div>
 
-        <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold m-0">Lista de Colaboradores</h4>
-                
-                <!-- BOTÓN NUEVO EMPLEADO (ID para JS) -->
-                <button id="btnNuevoEmpleado" class="btn btn-crear px-4" data-bs-toggle="modal" data-bs-target="#modalEmpleado">
-                    <i class="bi bi-plus-lg"></i> Nuevo Empleado
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <th class="ps-4">ID</th>
                             <th>Nombre Completo</th>
-                            <th>Correo / Usuario</th>
-                            <th>Rol Asignado</th>
+                            <th>DNI</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <!-- ID TBODY PARA JS -->
                     <tbody id="tablaEmpleadosBody">
-                        <!-- Fila 1 -->
-                        <tr>
-                            <td>#001</td>
-                            <td>Juan Pérez</td>
-                            <td>juan.ventas@acora.com</td>
-                            <td><span class="badge bg-success">Vendedor</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Fila 2 -->
-                        <tr>
-                            <td>#002</td>
-                            <td>Maria López</td>
-                            <td>maria.caja@acora.com</td>
-                            <td><span class="badge bg-warning text-dark">Cajero</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Fila 3 -->
-                        <tr>
-                            <td>#003</td>
-                            <td>Carlos Ruiz</td>
-                            <td>carlos.almacen@acora.com</td>
-                            <td><span class="badge bg-info text-dark">Almacenero</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL (FORMULARIO) -->
     <div class="modal fade" id="modalEmpleado" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title fw-bold">Crear Usuario Empleado</h5>
+                    <h5 class="modal-title fw-bold">Datos del Empleado</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- ID FORM PARA JS -->
                     <form id="formEmpleado">
+                        <input type="hidden" id="empId" name="id">
+                        
                         <div class="mb-3">
-                            <label class="form-label fw-bold small">Nombre y Apellido</label>
+                            <label class="fw-bold small">Nombre</label>
                             <input type="text" class="form-control" name="nombre" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold small">DNI</label>
+                            <label class="fw-bold small">Apellido</label>
+                            <input type="text" class="form-control" name="apellido" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold small">DNI</label>
                             <input type="text" class="form-control" name="dni" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold small">Correo (Usuario)</label>
+                            <label class="fw-bold small">Correo</label>
                             <input type="email" class="form-control" name="correo" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold small">Contraseña Temporal</label>
-                            <input type="password" class="form-control" name="password" required>
+                            <label class="fw-bold small">Contraseña</label>
+                            <input type="password" class="form-control" name="password" placeholder="Solo si deseas cambiarla">
                         </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small text-success">Asignar Rol</label>
-                            <select class="form-select border-success" name="rol" required>
-                                <option selected disabled>Seleccione un cargo...</option>
-                                <option value="VENDEDOR">Vendedor</option>
-                                <option value="CAJERO">Cajero</option>
-                                <option value="ALMACENERO">Almacenero</option>
+                        <div class="mb-3">
+                            <label class="fw-bold small">Rol</label>
+                            <select class="form-select" name="rol">
+                                <option value="Administrador">Administrador</option>
+                                <option value="Cajero">Cajero</option>
+                                <option value="Vendedor">Vendedor</option>
+                                <option value="Almacenero">Almacenero</option>
                             </select>
                         </div>
-
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-crear">Guardar Empleado</button>
+                            <button type="submit" class="btn btn-success">Guardar Cambios</button>
                         </div>
                     </form>
                 </div>
@@ -145,8 +100,7 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/admindashboard.js"></script>
+    <script src="/js/empleados.js"></script>
 </body>
 </html>

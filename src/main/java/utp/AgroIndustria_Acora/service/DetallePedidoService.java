@@ -12,25 +12,25 @@ import java.util.Optional;
 public class DetallePedidoService {
     
     @Autowired
-    private DetallePedidoRepository detallePedidoRepository;
+    private DetallePedidoRepository repo;
     
-    public List<DetallePedido> listarTodos() {
-        return detallePedidoRepository.findAll();
+    public List<DetallePedido> listarTodos() { return repo.findAll(); }
+    public Optional<DetallePedido> buscarPorId(Long id) { return repo.findById(id); }
+    public DetallePedido guardar(DetallePedido detalle) { return repo.save(detalle); }
+    public void eliminar(Long id) { repo.deleteById(id); }
+    public List<DetallePedido> listarPorPedidoId(Long pedidoId) { return repo.findByPedidoId(pedidoId); }
+
+    // --- MÉTODOS REPORTES ---
+
+    public List<Object[]> reporteVentasPorCategoria() {
+        return repo.obtenerVentasPorCategoria();
     }
-    
-    public Optional<DetallePedido> buscarPorId(Long id) {
-        return detallePedidoRepository.findById(id);
-    }
-    
-    public DetallePedido guardar(DetallePedido detalle) {
-        return detallePedidoRepository.save(detalle);
-    }
-    
-    public void eliminar(Long id) {
-        detallePedidoRepository.deleteById(id);
-    }
-    
-    public List<DetallePedido> listarPorPedidoId(Long pedidoId) {
-        return detallePedidoRepository.findByPedidoId(pedidoId);
+
+    public String productoMasVendido() {
+        List<String> top = repo.encontrarProductoTop();
+        if (top == null || top.isEmpty()) {
+            return "Sin Ventas";
+        }
+        return top.get(0); // Devuelve el primero de la lista
     }
 }

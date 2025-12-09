@@ -1,3 +1,4 @@
+// src/main/java/utp/AgroIndustria_Acora/controller/DetalleComprobantePagoController.java
 package utp.AgroIndustria_Acora.controller;
 
 import org.springframework.stereotype.Controller;

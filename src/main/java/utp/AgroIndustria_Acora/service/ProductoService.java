@@ -41,4 +41,17 @@ public class ProductoService {
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContainingIgnoreCase(nombre);
     }
+
+    // --- NUEVO PARA DASHBOARD ---
+    public Long contarStockBajo(Integer cantidad) {
+        return productoRepository.countByStockLessThan(cantidad);
+    }
+
+    public Long sumarStockTotal() {
+        return productoRepository.sumStockTotal();
+    }
+    
+    public List<Producto> listarStockBajo(Integer cantidad) {
+        return productoRepository.findByStockLessThan(cantidad);
+    }
 }

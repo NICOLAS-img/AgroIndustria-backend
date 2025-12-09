@@ -1,48 +1,66 @@
 package utp.AgroIndustria_Acora.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import utp.AgroIndustria_Acora.modelo.Empleado;
 import utp.AgroIndustria_Acora.service.EmpleadoService;
 
+import java.util.List;
+
 @Controller
-@RequestMapping("/empleados")
 public class EmpleadoController {
 
-    private final EmpleadoService service;
+    @Autowired
+    private EmpleadoService empleadoService;
 
-    public EmpleadoController(EmpleadoService service) {
-        this.service = service;
+    // 1. CARGAR LA VISTA HTML
+    @GetMapping("/empleados")
+    public String verEmpleados() {
+        return "empleados"; // Carga empleados.html
     }
 
-    @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("empleados", service.listar());
-        return "empleado/lista";
+    // --- API REST (Para que funcione el JavaScript) ---
+
+    // 2. LISTAR TODOS (JSON)
+    @GetMapping("/api/empleados")
+    @ResponseBody
+    public List<Empleado> listarApi() {
+        return empleadoService.listar();
     }
 
-    @GetMapping("/nuevo")
-    public String nuevo(Model model) {
-        model.addAttribute("empleado", new Empleado());
-        return "empleado/form";
+    // 3. BUSCAR UNO PARA EDITAR (JSON)
+    @GetMapping("/api/empleados/{id}")
+    @ResponseBody
+    public Empleado obtenerPorId(@PathVariable Integer id) {
+        return empleadoService.buscarPorId(id);
     }
 
-    @PostMapping
-    public String guardar(Empleado empleado) {
-        service.guardar(empleado);
-        return "redirect:/empleados";
+    // 4. GUARDAR O ACTUALIZAR
+    @PostMapping("/api/empleados")
+    @ResponseBody
+    public String guardarApi(@RequestBody Empleado empleado) {
+        try {
+            empleadoService.guardar(empleado);
+            return "OK";
+        } catch (Exception e) {
+            return "ERROR";
+        }
     }
 
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Integer id, Model model) {
-        model.addAttribute("empleado", service.buscarPorId(id));
-        return "empleado/form";
-    }
+    // 5. ELIMINAR
+  
 
-    @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Integer id) {
-        service.eliminar(id);
-        return "redirect:/empleados";
+    // NOTA: @PathVariable Integer id (coincide con el JS)
+    @DeleteMapping("/api/empleados/{id}")
+    @ResponseBody
+    public String eliminarApi(@PathVariable Integer id) {
+        try {
+            empleadoService.eliminar(id);
+            return "OK";
+        } catch (Exception e) {
+            return "ERROR";
+        }
     }
-}
+    }

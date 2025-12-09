@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumen General | Agroindustrias Acora</title>
     
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- CSS Propio -->
     <link href="/css/admindashboard.css" rel="stylesheet">
 </head>
 <body>
 
-    <!-- MENÚ LATERAL -->
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="bi bi-tree-fill fs-1 text-success"></i>
@@ -22,7 +18,6 @@
             <small class="text-muted">Panel Admin</small>
         </div>
         
-        <!-- ENLACES DEL MENÚ -->
         <a href="#" class="active"><i class="bi bi-speedometer2"></i> Resumen</a>
         <a href="/admin/empleados"><i class="bi bi-people-fill"></i> Empleados</a>
         <a href="/admin/productos"><i class="bi bi-box-seam"></i> Productos</a>
@@ -33,73 +28,72 @@
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <div class="main-content">
         
-        <!-- BANNER DE BIENVENIDA -->
         <div class="bg-white p-4 rounded shadow-sm mb-4 border-start border-5 border-success d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold text-dark m-0">¡Bienvenido, Administrador!</h2>
-                <p class="text-muted m-0 mt-1">Aquí tienes el resumen de actividades de Agroindustrias Acora.</p>
+                <p class="text-muted m-0 mt-1">Aquí tienes el resumen de actividades en tiempo real.</p>
             </div>
             <span class="badge bg-light text-dark border p-2">
-                <i class="bi bi-calendar3"></i> Hoy: 04 Diciembre 2025
+                <i class="bi bi-calendar3"></i> Hoy: <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy')}">Fecha</span>
             </span>
         </div>
 
-        <!-- KPI CARDS -->
         <div class="row g-4 mb-5">
+            
             <div class="col-md-3">
                 <div class="stat-card border-start border-5 border-success">
                     <div>
                         <h6 class="text-muted small text-uppercase fw-bold">Personal</h6>
-                        <h3 class="fw-bold m-0 text-dark">12</h3>
-                        <small class="text-success"><i class="bi bi-check-circle"></i> 8 Activos</small>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${totalEmpleados}">0</h3>
+                        <small class="text-success"><i class="bi bi-check-circle"></i> Registrados</small>
                     </div>
                     <div class="stat-icon bg-success text-white"><i class="bi bi-people"></i></div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card border-start border-5 border-primary">
                     <div>
-                        <h6 class="text-muted small text-uppercase fw-bold">Inventario</h6>
-                        <h3 class="fw-bold m-0 text-dark">1,250</h3>
-                        <small class="text-muted">Unidades totales</small>
+                        <h6 class="text-muted small text-uppercase fw-bold">Inventario Total</h6>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${totalInventario}">0</h3>
+                        <small class="text-muted">Unidades en Stock</small>
                     </div>
                     <div class="stat-icon bg-primary text-white"><i class="bi bi-box-seam"></i></div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card border-start border-5 border-danger">
                     <div>
                         <h6 class="text-muted small text-uppercase fw-bold">Stock Bajo</h6>
-                        <h3 class="fw-bold m-0 text-danger">5</h3>
+                        <h3 class="fw-bold m-0 text-danger" th:text="${totalStockBajo}">0</h3>
                         <small class="text-danger fw-bold">Requiere atención</small>
                     </div>
                     <div class="stat-icon bg-danger text-white"><i class="bi bi-exclamation-triangle"></i></div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card border-start border-5 border-warning">
                     <div>
                         <h6 class="text-muted small text-uppercase fw-bold">Ventas Hoy</h6>
-                        <h3 class="fw-bold m-0 text-dark">S/ 4,500</h3>
-                        <small class="text-success"><i class="bi bi-graph-up"></i> +12% vs ayer</small>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${'S/ ' + (ventasHoy != null ? ventasHoy : '0.00')}">S/ 0.00</h3>
+                        <small class="text-success"><i class="bi bi-graph-up"></i> Ingresos del día</small>
                     </div>
                     <div class="stat-icon bg-warning text-white"><i class="bi bi-currency-dollar"></i></div>
                 </div>
             </div>
         </div>
 
-        <!-- SECCIONES DE DETALLE -->
         <div class="row g-4">
             
-            <!-- RESUMEN INVENTARIO -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold text-secondary"><i class="bi bi-box-seam me-2"></i> Stock Crítico</h6>
-                        <a href="/admin/productos" class="btn btn-sm btn-outline-primary">Ver Inventario</a>
+                        <h6 class="m-0 fw-bold text-danger"><i class="bi bi-box-seam me-2"></i> Alerta de Stock (< 5 un.)</h6>
+                        <a href="/admin/productos" class="btn btn-sm btn-outline-danger">Ver Todo</a>
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-hover align-middle mb-0">
@@ -107,19 +101,17 @@
                                 <tr>
                                     <th class="ps-4">Producto</th>
                                     <th>Categoría</th>
-                                    <th>Estado</th>
+                                    <th>Stock</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="ps-4 fw-bold">Aceite Oliva Extra 500ml</td>
-                                    <td>Aceites</td>
-                                    <td><span class="badge bg-danger">3 un. (Crítico)</span></td>
+                                <tr th:each="prod : ${productosBajos}">
+                                    <td class="ps-4 fw-bold" th:text="${prod.nombre}">Nombre</td>
+                                    <td th:text="${prod.categoria}">Categoría</td>
+                                    <td><span class="badge bg-danger" th:text="${prod.stock + ' un.'}">0 un.</span></td>
                                 </tr>
-                                <tr>
-                                    <td class="ps-4 fw-bold">Aceituna Rellena Rocoto</td>
-                                    <td>Rellenas</td>
-                                    <td><span class="badge bg-warning text-dark">12 un. (Bajo)</span></td>
+                                <tr th:if="${#lists.isEmpty(productosBajos)}">
+                                    <td colspan="3" class="text-center text-muted py-3">¡Todo el stock está bien! ✅</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -127,40 +119,26 @@
                 </div>
             </div>
 
-            <!-- RESUMEN PERSONAL (CORREGIDO) -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold text-secondary"><i class="bi bi-person-check me-2"></i> Turnos Activos</h6>
+                        <h6 class="m-0 fw-bold text-secondary"><i class="bi bi-person-check me-2"></i> Equipo Registrado</h6>
                         <a href="/admin/empleados" class="btn btn-sm btn-outline-success">Gestionar</a>
                     </div>
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3" 
+                                th:each="emp, stat : ${empleados}" th:if="${stat.count <= 5}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
                                         <i class="bi bi-person-fill text-secondary fs-5"></i>
                                     </div>
                                     <div>
-                                        <h6 class="m-0 fw-bold">Juan Pérez</h6>
-                                        <!-- CORREGIDO: Solo muestra el cargo -->
-                                        <small class="text-muted">Vendedor</small>
+                                        <h6 class="m-0 fw-bold" th:text="${emp.nombre}">Nombre</h6>
+                                        <small class="text-muted" th:text="${emp.rol}">Rol</small>
                                     </div>
                                 </div>
-                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">En Turno</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                        <i class="bi bi-person-fill text-secondary fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="m-0 fw-bold">Maria López</h6>
-                                        <!-- CORREGIDO: Solo muestra el cargo -->
-                                        <small class="text-muted">Cajero</small>
-                                    </div>
-                                </div>
-                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">En Turno</span>
+                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Activo</span>
                             </li>
                         </ul>
                     </div>

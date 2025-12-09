@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda Oficial | Agroindustrias Acora</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     
-    <!-- CSS PROPIO EXTERNO -->
     <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-acora sticky-top">
         <div class="container">
             <a class="navbar-brand brand-text" href="#">
@@ -31,25 +27,22 @@
                     <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
                     
-                    <!-- Lógica Thymeleaf para Login/Logout -->
                     <li class="nav-item ms-3" th:if="${session.usuarioLogueado == null}">
                         <a href="/login" class="btn btn-outline-success rounded-pill px-4">Ingresar</a>
                     </li>
 
                     <li class="nav-item ms-3 d-flex align-items-center gap-3" th:if="${session.usuarioLogueado != null}">
-                        <!-- Botón Carrito -->
                         <button class="btn btn-warning position-relative text-white" data-bs-toggle="modal" data-bs-target="#modalCarrito">
                             <i class="bi bi-cart3"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
                         </button>
                         
-                        <!-- Menú Usuario -->
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle border" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle text-success"></i> <span th:text="${session.usuarioLogueado}">Usuario</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Mis Pedidos</a></li>
+                                <li><a class="dropdown-item" href="/mis-pedidos">Mis Pedidos</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
                             </ul>
@@ -59,55 +52,60 @@
             </div>
         </div>
     </nav>
+    <header class="hero-section d-flex align-items-center text-white">
+    <div class="container text-center">
+        <h1 class="display-2 fw-bold mb-4">El Sabor Auténtico de La Yarada</h1>
+        <p class="lead mb-5 fs-4 w-md-75 mx-auto">Aceitunas y aceites premium, cultivados con tradición y procesados con pasión para tu mesa.</p>
+        <a href="#productos" class="btn btn-warning btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg text-dark">
+            <i class="bi bi-shop me-2"></i> DESCUBRIR CATÁLOGO
+        </a>
+    </div>
+</header>
 
-    <!-- HERO SECTION (PORTADA) -->
-    <header class="hero">
-        <div class="container text-center">
-            <h1 class="display-3 fw-bold">Aceitunas Premium de la Yarada</h1>
-            <p class="lead mb-4 fw-light fs-4">Calidad excepcional directo del campo peruano. ¡Pide online!</p>
-            <a href="#productos" class="btn btn-warning btn-lg text-white fw-bold rounded-pill px-5 shadow-lg">VER CATÁLOGO COMPLETO</a>
-        </div>
-    </header>
-
-    <!-- SECCIÓN NOSOTROS -->
-    <section id="nosotros" class="py-5 bg-white">
-        <div class="container py-5">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <!-- Imagen de la empresa -->
-                    <img src="https://images.unsplash.com/photo-1517594422361-5eab2be77278?q=80&w=800&auto=format&fit=crop" class="img-fluid rounded-4 shadow-lg" alt="Procesando Olivos">
-                </div>
-                <div class="col-lg-6">
-                    <h6 class="text-success fw-bold text-uppercase">Nuestra Pasión</h6>
-                    <h2 class="fw-bold mb-4 display-6">Tradición Olivera desde 2022</h2>
-                    <p class="text-secondary lead">Agroindustrias Acora S.A.C. nace en el corazón de La Yarada, tierra bendita para el cultivo del olivo. Llevamos a su hogar productos procesados con los más altos estándares de calidad, respetando la tradición agrícola y el desarrollo sostenible.</p>
-                    
-                    <div class="row g-4 mt-2">
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-award fs-2 text-warning me-3"></i>
-                                <div>
-                                    <h6 class="fw-bold m-0">Calidad Premium</h6>
-                                    <small class="text-muted">Selección manual</small>
-                                </div>
+<section id="nosotros" class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="row align-items-center gx-lg-5">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="https://w7.pngwing.com/pngs/528/646/png-transparent-popeye-olive-oyl-j-wellington-wimpy-bluto-poopdeck-pappy-popeye-hand-boy-cartoon.png" 
+                     alt="Nuestra Tradición Olivera" class="img-fluid rounded-4 shadow-lg">
+            </div>
+            
+            <div class="col-lg-6">
+                <h6 class="text-success fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Nuestra Pasión</h6>
+                <h2 class="fw-bold display-5 mb-4 text-dark">Tradición Olivera desde 2022</h2>
+                <p class="text-muted lead mb-5">
+                    En Agroindustrias Acora S.A.C., fusionamos la herencia agrícola de Tacna con estándares modernos de calidad. Cada producto es el resultado de un cuidado meticuloso, desde el cultivo hasta el envasado, respetando nuestra tierra.
+                </p>
+                
+                <div class="row gy-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle me-3">
+                                <i class="bi bi-award-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Calidad Premium</h5>
+                                <p class="text-muted small mb-0">Selección manual de los mejores frutos para asegurar la excelencia.</p>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-flower1 fs-2 text-success me-3"></i>
-                                <div>
-                                    <h6 class="fw-bold m-0">100% Natural</h6>
-                                    <small class="text-muted">Sin conservantes</small>
-                                </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle me-3">
+                                <i class="bi bi-flower1 fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">100% Natural</h5>
+                                <p class="text-muted small mb-0">Proceso artesanal sin conservantes ni aditivos artificiales.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- CATÁLOGO DE PRODUCTOS (9 ITEMS) -->
     <section id="productos" class="container py-5 bg-light">
         <div class="container py-5">
             <div class="text-center mb-5">
@@ -117,146 +115,53 @@
             
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 
-                <!-- PRODUCTO 1: Botija -->
-                <div class="col">
+                <div class="col" th:each="prod : ${productos}">
                     <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1585671720465-9273c3329d29?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Aceituna Botija">
+                        <div style="height: 250px; overflow: hidden;">
+    <img th:src="${prod.imagen != null && prod.imagen != '' ? prod.imagen : 'https://dummyimage.com/600x400/6b8e23/fff&text=Sin+Imagen'}" 
+         class="card-img-top h-100 w-100" 
+         style="object-fit: cover;"
+         alt="Imagen Producto">
+</div>
+                             
                         <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Negras</small>
-                            <h5 class="fw-bold my-2">Botija Clásica 1Kg</h5>
-                            <p class="text-muted small">Curada en salmuera con toques de orégano.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 18.50</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Botija Clásica 1Kg', 18.50)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
+                            <small class="text-muted text-uppercase" th:text="${prod.categoria}">CATEGORIA</small>
+                            <h5 class="fw-bold my-2" th:text="${prod.nombre}">NOMBRE PRODUCTO</h5>
+                            <p class="text-muted small" th:text="${prod.descripcion}">Descripción...</p>
+                            
+                            <h4 class="text-success fw-bold mb-3" th:text="${'S/ ' + prod.precio}">S/ 0.00</h4>
+
+<button class="btn btn-add w-100 rounded-pill mt-2" 
+        th:if="${session.usuarioLogueado != null}" 
+        th:data-id="${prod.id}"
+        th:data-nombre="${prod.nombre}"
+        th:data-precio="${prod.precio}"
+        onclick="agregarDesdeBoton(this)">
+    <i class="bi bi-cart-plus"></i> Añadir
+</button>
+
+<button class="btn btn-add w-100 rounded-pill mt-2" 
+        th:if="${session.usuarioLogueado == null}"
+        onclick="irALogin()">
+    <i class="bi bi-cart-plus"></i> Añadir
+</button>
+                            
+                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" 
+                               th:if="${session.usuarioLogueado == null}">
+                               <i class="bi bi-lock"></i> Iniciar Sesión para Comprar
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- PRODUCTO 2: Sevillana -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1603569283847-aa295f0d016a?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Aceituna Sevillana">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Verdes</small>
-                            <h5 class="fw-bold my-2">Sevillana Entera 1Kg</h5>
-                            <p class="text-muted small">Textura firme, perfecta para ensaladas.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 15.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Sevillana Entera 1Kg', 15.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 3: Aceite 500ml -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcdcc3a?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Aceite Oliva">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Aceites</small>
-                            <h5 class="fw-bold my-2">Aceite Extra Virgen 500ml</h5>
-                            <p class="text-muted small">Prensado en frío, acidez < 0.2%.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 28.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Aceite Extra Virgen 500ml', 28.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- PRODUCTO 4: Rellena Rocoto -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://plus.unsplash.com/premium_photo-1675715830932-d667c13284aa?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Rellena Rocoto">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Rellenas</small>
-                            <h5 class="fw-bold my-2">Rellena de Rocoto 1Kg</h5>
-                            <p class="text-muted small">Sabor picante, ideal para piqueos.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 22.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Rellena Rocoto 1Kg', 22.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 5: Aceite 1L -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1628172962130-1b2c453531b7?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Aceite 1L">
-                    <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Aceites</small>
-                            <h5 class="fw-bold my-2">Aceite Extra Virgen 1L</h5>
-                            <p class="text-muted small">Presentación familiar económica.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 45.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Aceite Oliva 1L', 45.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 6: Negra sin Pepa -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1549495392-4d2243d5774a?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Sin Pepa">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Negras</small>
-                            <h5 class="fw-bold my-2">Negra Sin Pepa 1Kg</h5>
-                            <p class="text-muted small">Deshuesada, lista para comer.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 21.50</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Negra Sin Pepa 1Kg', 21.50)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 7: Verde Deshuesada -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Verde Sin Pepa">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Verdes</small>
-                            <h5 class="fw-bold my-2">Verde Deshuesada 1Kg</h5>
-                            <p class="text-muted small">Ideal para pizzas y ensaladas.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 19.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Verde Deshuesada 1Kg', 19.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 8: Rellena Pimiento -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1547849885-c54d764721c5?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Rellena Pimiento">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Rellenas</small>
-                            <h5 class="fw-bold my-2">Rellena de Pimiento 1Kg</h5>
-                            <p class="text-muted small">Suave y agradable al paladar.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 22.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Rellena Pimiento 1Kg', 22.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTO 9: PACK DEGUSTACIÓN -->
-                <div class="col">
-                    <div class="product-card h-100">
-                        <img src="https://images.unsplash.com/photo-1595155913210-91a7837053e1?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Pack">
-                        <div class="card-body text-center p-4">
-                            <small class="text-muted text-uppercase">Packs</small>
-                            <h5 class="fw-bold my-2">Pack Degustación</h5>
-                            <p class="text-muted small">1 Aceite 500ml + 1kg Botija.</p>
-                            <h4 class="text-success fw-bold mb-3">S/ 40.00</h4>
-                            <button class="btn btn-add w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado != null}" onclick="agregarAlCarrito('Pack Degustación', 40.00)"><i class="bi bi-cart-plus"></i> Añadir</button>
-                            <a href="/login" class="btn btn-outline-secondary w-100 rounded-pill mt-2" th:if="${session.usuarioLogueado == null}"><i class="bi bi-lock"></i> Ver</a>
-                        </div>
-                    </div>
+                <div class="col-12 text-center" th:if="${#lists.isEmpty(productos)}">
+                    <p class="lead text-muted">No hay productos disponibles en este momento.</p>
                 </div>
 
             </div>
         </div>
     </section>
 
-    <!-- FOOTER PROFESIONAL -->
     <footer id="contacto" class="bg-dark text-white py-5">
         <div class="container">
             <div class="row g-4">
@@ -286,7 +191,6 @@
         </div>
     </footer>
 
-    <!-- MODAL CARRITO -->
     <div class="modal fade" id="modalCarrito" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -320,7 +224,6 @@
         </div>
     </div>
 
-    <!-- MODAL PASARELA DE PAGO -->
     <div class="modal fade" id="modalPago" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -334,11 +237,19 @@
                         <span id="pagoTotal">S/ 0.00</span>
                     </div>
 
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted">Tipo de Comprobante:</label>
+                        <select class="form-select border-success" id="tipoComprobante">
+                            <option value="BOLETA">Boleta de Venta</option>
+                            <option value="FACTURA">Factura</option>
+                        </select>
+                    </div>
+
                     <h6 class="fw-bold mb-3">Seleccione Método de Pago:</h6>
                     
                     <ul class="nav nav-pills mb-3 nav-fill" id="pills-tab" role="tablist">
                         <li class="nav-item">
-                            <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#pills-yape" type="button">
+                            <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#pills-yape" type="button" onclick="iniciarSimulacionYape()">
                                 <i class="bi bi-qr-code"></i> Yape / Plin
                             </button>
                         </li>
@@ -350,17 +261,17 @@
                     </ul>
 
                     <div class="tab-content" id="pills-tabContent">
-                        <!-- YAPE -->
                         <div class="tab-pane fade show active text-center" id="pills-yape">
                             <div class="qr-container mb-3">
                                 <p class="small text-muted mb-2">Escanea el código QR</p>
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PagoOnlineAcora" alt="QR">
-                                <div id="yapeStatus" class="mt-3 text-warning fw-bold small">Esperando...</div>
+                                <div id="yapeStatus" class="mt-3 text-warning fw-bold small">Esperando escaneo...</div>
                             </div>
-                            <button class="btn btn-success w-100" id="btnConfirmarYape" disabled onclick="finalizarCompra('YAPE')">CONFIRMAR PAGO</button>
+                            <button class="btn btn-success w-100" id="btnConfirmarYape" disabled onclick="finalizarCompra('YAPE')">
+                                CONFIRMAR PAGO
+                            </button>
                         </div>
 
-                        <!-- TARJETA -->
                         <div class="tab-pane fade" id="pills-card">
                             <div class="card-simulada mb-3 text-center">
                                 <h4 class="mb-3" style="letter-spacing: 3px;">•••• •••• •••• 4242</h4>

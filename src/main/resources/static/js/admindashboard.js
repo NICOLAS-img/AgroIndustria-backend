@@ -1,150 +1,148 @@
-/* admindashboard.js - Lógica Final Corregida */
-
-document.addEventListener("DOMContentLoaded", function() {
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen General | Agroindustrias Acora</title>
     
-    // Referencias a los elementos del HTML
-    const formEmpleado = document.getElementById('formEmpleado');
-    const tablaEmpleadosBody = document.getElementById('tablaEmpleadosBody');
-    const btnNuevoEmpleado = document.getElementById('btnNuevoEmpleado');
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="/css/admindashboard.css" rel="stylesheet">
+</head>
+<body>
 
-    // ==========================================
-    // 1. BOTÓN "NUEVO EMPLEADO" (Limpieza)
-    // ==========================================
-    if (btnNuevoEmpleado) {
-        btnNuevoEmpleado.addEventListener('click', function() {
-            // 1. Limpiar campos del formulario
-            formEmpleado.reset();
-            // 2. Olvidar cualquier edición anterior
-            delete formEmpleado.dataset.rowIndex;
-            
-            // 3. Restaurar textos originales del modal
-            const modalTitle = document.querySelector('#modalEmpleado .modal-title');
-            if(modalTitle) modalTitle.innerText = "Crear Usuario Empleado";
-            
-            // 4. Buscar SOLO el botón de adentro del formulario y cambiarle el texto
-            const btnGuardar = formEmpleado.querySelector('button[type="submit"]');
-            if(btnGuardar) btnGuardar.innerText = "Guardar Empleado";
-        });
-    }
-
-    // ==========================================
-    // 2. DETECTOR DE CLICS EN LA TABLA
-    // ==========================================
-    if (tablaEmpleadosBody) {
-        tablaEmpleadosBody.addEventListener('click', function(event) {
-            // Detectar si el clic fue en Editar o Eliminar (botón o ícono)
-            const btnEditar = event.target.closest('.btn-editar');
-            const btnEliminar = event.target.closest('.btn-eliminar');
-
-            if (btnEditar) {
-                prepararEdicion(btnEditar);
-            } else if (btnEliminar) {
-                eliminarFila(btnEliminar);
-            }
-        });
-    }
-
-    // ==========================================
-    // 3. GUARDAR (CREAR O EDITAR)
-    // ==========================================
-    if (formEmpleado) {
-        formEmpleado.addEventListener('submit', function(event) {
-            event.preventDefault(); // Evitar recarga
-
-            // Capturar datos del formulario
-            const nombre = formEmpleado.querySelector('input[name="nombre"]').value;
-            const correo = formEmpleado.querySelector('input[name="correo"]').value;
-            const rolSelect = formEmpleado.querySelector('select[name="rol"]');
-            const rolTexto = rolSelect.options[rolSelect.selectedIndex].text;
-            const rolClase = getRolClass(rolSelect.value);
-
-            // Verificar si estamos en modo edición
-            const rowIndex = formEmpleado.dataset.rowIndex;
-
-            if (rowIndex) {
-                // --- MODO EDICIÓN: ACTUALIZAR FILA ---
-                const fila = tablaEmpleadosBody.rows[rowIndex];
-                if(fila) {
-                    fila.cells[1].innerText = nombre;
-                    fila.cells[2].innerText = correo;
-                    fila.cells[3].innerHTML = `<span class="badge ${rolClase}">${rolTexto}</span>`;
-                    alert("Empleado actualizado correctamente");
-                }
-            } else {
-                // --- MODO CREACIÓN: NUEVA FILA ---
-                const nuevaFila = `
-                    <tr>
-                        <td>#NEW</td>
-                        <td>${nombre}</td>
-                        <td>${correo}</td>
-                        <td><span class="badge ${rolClase}">${rolTexto}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary btn-editar"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger btn-eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tablaEmpleadosBody.insertAdjacentHTML('beforeend', nuevaFila);
-                alert("Empleado creado correctamente");
-            }
-
-            // Cerrar el modal
-            const modalElement = document.getElementById('modalEmpleado');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-            modalInstance.hide();
-            
-            // Limpiar formulario al terminar para dejarlo listo
-            formEmpleado.reset();
-            delete formEmpleado.dataset.rowIndex;
-        });
-    }
-
-    // --- FUNCIONES AUXILIARES ---
-
-    function getRolClass(rolValue) {
-        if(rolValue === 'VENDEDOR') return 'bg-success';
-        if(rolValue === 'CAJERO') return 'bg-warning text-dark';
-        if(rolValue === 'ALMACENERO') return 'bg-info text-dark';
-        return 'bg-secondary';
-    }
-
-    function prepararEdicion(btn) {
-        const fila = btn.closest('tr');
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-tree-fill fs-1 text-success"></i>
+            <div class="brand-title">Olivos Acora</div>
+            <small class="text-muted">Panel Admin</small>
+        </div>
         
-        // Llenar el formulario con datos de la fila
-        formEmpleado.querySelector('input[name="nombre"]').value = fila.cells[1].innerText;
-        formEmpleado.querySelector('input[name="correo"]').value = fila.cells[2].innerText;
+        <a href="#" class="active"><i class="bi bi-speedometer2"></i> Resumen</a>
+        <a href="/empleados"><i class="bi bi-people-fill"></i> Empleados</a>
+        <a href="/admin/productos"><i class="bi bi-box-seam"></i> Productos</a>
+        <a href="/admin/reportes"><i class="bi bi-file-earmark-text"></i> Reportes</a>
         
-        // Seleccionar rol
-        const rolActual = fila.cells[3].innerText.trim();
-        const selectRol = formEmpleado.querySelector('select[name="rol"]');
-        for (let i = 0; i < selectRol.options.length; i++) {
-            if (selectRol.options[i].text === rolActual) {
-                selectRol.selectedIndex = i;
-                break;
-            }
-        }
+        <div class="mt-5 border-top border-secondary pt-3">
+            <a href="/login" class="text-danger"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+        </div>
+    </div>
 
-        // Guardar índice de la fila para saber cuál actualizar luego
-        const index = Array.from(fila.parentNode.children).indexOf(fila);
-        formEmpleado.dataset.rowIndex = index;
-
-        // Cambiar textos VISUALES del modal
-        const modalTitle = document.querySelector('#modalEmpleado .modal-title');
-        if(modalTitle) modalTitle.innerText = "Editar Empleado";
+    <div class="main-content">
         
-        const btnGuardar = formEmpleado.querySelector('button[type="submit"]');
-        if(btnGuardar) btnGuardar.innerText = "Actualizar Datos";
+        <div class="bg-white p-4 rounded shadow-sm mb-4 border-start border-5 border-success d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold text-dark m-0">¡Bienvenido, Administrador!</h2>
+                <p class="text-muted m-0 mt-1">Resumen en tiempo real de tu negocio.</p>
+            </div>
+            <span class="badge bg-light text-dark border p-2">
+                <i class="bi bi-calendar3"></i> Hoy: <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}">Fecha</span>
+            </span>
+        </div>
 
-        // Abrir modal
-        const modalElement = document.getElementById('modalEmpleado');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-    }
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stat-card border-start border-5 border-success">
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold">Personal</h6>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${totalEmpleados}">0</h3>
+                        <small class="text-success">Registrados en BD</small>
+                    </div>
+                    <div class="stat-icon bg-success text-white"><i class="bi bi-people"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card border-start border-5 border-primary">
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold">Inventario Total</h6>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${totalInventario}">0</h3>
+                        <small class="text-muted">Unidades (Stock)</small>
+                    </div>
+                    <div class="stat-icon bg-primary text-white"><i class="bi bi-box-seam"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card border-start border-5 border-danger">
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold">Stock Bajo</h6>
+                        <h3 class="fw-bold m-0 text-danger" th:text="${totalStockBajo}">0</h3>
+                        <small class="text-danger fw-bold">Requiere atención</small>
+                    </div>
+                    <div class="stat-icon bg-danger text-white"><i class="bi bi-exclamation-triangle"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card border-start border-5 border-warning">
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold">Ventas Hoy</h6>
+                        <h3 class="fw-bold m-0 text-dark" th:text="${'S/ ' + ventasHoy}">S/ 0.00</h3>
+                        <small class="text-success"><i class="bi bi-cash-coin"></i> Ingresos del día</small>
+                    </div>
+                    <div class="stat-icon bg-warning text-white"><i class="bi bi-currency-dollar"></i></div>
+                </div>
+            </div>
+        </div>
 
-    function eliminarFila(btn) {
-        if(confirm('¿Seguro que deseas eliminar este empleado?')) {
-            btn.closest('tr').remove();
-        }
-    }
-});
+        <div class="row g-4">
+            
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold text-danger"><i class="bi bi-box-seam me-2"></i> Alerta de Stock (< 20 un.)</h6>
+                        <a href="/admin/productos" class="btn btn-sm btn-outline-danger">Ver Todo</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="prod : ${productosBajos}">
+                                    <td class="ps-4 fw-bold" th:text="${prod.nombre}">Prod</td>
+                                    <td th:text="${prod.categoria}">Cat</td>
+                                    <td><span class="badge bg-danger" th:text="${prod.stock + ' un.'}">0 un.</span></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(productosBajos)}">
+                                    <td colspan="3" class="text-center text-success py-3">¡Todo el inventario está saludable! ✅</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold text-secondary"><i class="bi bi-person-check me-2"></i> Equipo de Trabajo</h6>
+                        <a href="/empleados" class="btn btn-sm btn-outline-success">Gestionar</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3" th:each="emp : ${empleados}">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-person-fill text-secondary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 fw-bold" th:text="${emp.nombre}">Nombre</h6>
+                                        <small class="text-muted" th:text="${emp.rol}">Rol</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Activo</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

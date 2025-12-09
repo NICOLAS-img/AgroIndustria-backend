@@ -8,6 +8,7 @@ import utp.AgroIndustria_Acora.repository.PedidoRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class PedidoService {
@@ -15,31 +16,24 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
     
-    public List<Pedido> listarTodos() {
-        return pedidoRepository.findAll();
-    }
+    // Métodos CRUD
+    public List<Pedido> listarTodos() { return pedidoRepository.findAll(); }
+    public Optional<Pedido> buscarPorId(Long id) { return pedidoRepository.findById(id); }
+    public Pedido guardar(Pedido pedido) { return pedidoRepository.save(pedido); }
+    public void eliminar(Long id) { pedidoRepository.deleteById(id); }
+    public List<Pedido> buscarPorEstado(String estado) { return pedidoRepository.findByEstado(estado); }
+    public List<Pedido> buscarPorCliente(Cliente cliente) { return pedidoRepository.findByCliente(cliente); }
+    public Long contarPorEstado(String estado) { return pedidoRepository.countByEstado(estado); }
+
+    // --- MÉTODOS REPORTES (Estos son los que te faltaban) ---
+
+    public BigDecimal sumarVentasHoy() { return pedidoRepository.sumVentasHoy(); }
     
-    public Optional<Pedido> buscarPorId(Long id) {
-        return pedidoRepository.findById(id);
-    }
+    public BigDecimal ventasMesActual() { return pedidoRepository.sumVentasMesActual(); }
     
-    public Pedido guardar(Pedido pedido) {
-        return pedidoRepository.save(pedido);
-    }
+    public long contarPedidosTotales() { return pedidoRepository.count(); }
     
-    public void eliminar(Long id) {
-        pedidoRepository.deleteById(id);
-    }
+    public List<Pedido> obtenerUltimosPedidos() { return pedidoRepository.findTop5ByOrderByFechaPedidoDesc(); }
     
-    public List<Pedido> buscarPorEstado(String estado) {
-        return pedidoRepository.findByEstado(estado);
-    }
-    
-    public List<Pedido> buscarPorCliente(Cliente cliente) {
-        return pedidoRepository.findByCliente(cliente);
-    }
-    
-    public Long contarPorEstado(String estado) {
-        return pedidoRepository.countByEstado(estado);
-    }
+    public List<Object[]> reporteVentasPorMes() { return pedidoRepository.obtenerVentasPorMes(); }
 }

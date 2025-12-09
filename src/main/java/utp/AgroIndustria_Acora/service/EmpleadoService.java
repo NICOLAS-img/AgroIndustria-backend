@@ -30,4 +30,9 @@ public class EmpleadoService {
     public void eliminar(Integer id) {
         repo.deleteById(id);
     }
+
+    // --- NUEVO PARA DASHBOARD ---
+    public long contarEmpleados() {
+        return repo.count();
+    }
 }

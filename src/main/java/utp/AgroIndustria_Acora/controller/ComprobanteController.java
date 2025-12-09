@@ -1,3 +1,4 @@
+// src/main/java/utp/AgroIndustria_Acora/controller/ComprobanteController.java
 package utp.AgroIndustria_Acora.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,4 +74,3 @@ public class ComprobanteController {
         return "redirect:/comprobantes";
     }
 }
-

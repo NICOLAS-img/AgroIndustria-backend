@@ -1,3 +1,4 @@
+// src/main/java/utp/AgroIndustria_Acora/service/DetalleComprobantePagoService.java
 package utp.AgroIndustria_Acora.service;
 
 import org.springframework.stereotype.Service;

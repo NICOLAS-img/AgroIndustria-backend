@@ -1,97 +1,129 @@
-console.log(">>> CARGANDO JS V2..."); // Si no ves esto, no se actualizó
+/* productos.js - Gestión Completa con Edición */
 
 document.addEventListener("DOMContentLoaded", function() {
-    
-    // Referencias
     const formProducto = document.getElementById('formProducto');
-    const tablaProductosBody = document.getElementById('tablaProductosBody'); // Busca este ID en tu HTML
 
-    // 1. CLICK EN LA TABLA (EDITAR / ELIMINAR)
-    if (tablaProductosBody) {
-        tablaProductosBody.addEventListener('click', function(event) {
-            // Detectar botón o ícono
-            const btnEditar = event.target.closest('.btn-editar');
-            const btnEliminar = event.target.closest('.btn-eliminar');
+    // 1. CARGAR PRODUCTOS AL INICIAR
+    cargarProductos();
 
-            if (btnEditar) {
-                abrirModalEditar(btnEditar);
-            } else if (btnEliminar) {
-                eliminarProducto(btnEliminar);
-            }
+    // 2. BOTÓN "NUEVO PRODUCTO" (Para limpiar el formulario)
+    // Busca el botón que abre el modal y agrégale un listener para limpiar
+    const btnNuevo = document.querySelector('[data-bs-target="#modalProducto"]');
+    if(btnNuevo) {
+        btnNuevo.addEventListener('click', () => {
+            formProducto.reset();
+            document.getElementById('prodId').value = ''; // Limpiar ID oculto
+            document.querySelector('.modal-title').innerText = "Nuevo Producto";
         });
-    } else {
-        alert("ERROR: Falta id='tablaProductosBody' en el HTML");
     }
 
-    // 2. GUARDAR
+    // 3. GUARDAR (CREAR O EDITAR)
     if (formProducto) {
         formProducto.addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Evitar recarga
             
-            // Datos
-            const nombre = formProducto.querySelector('input[name="nombre"]').value;
-            const categoria = formProducto.querySelector('select[name="categoria"]').value;
-            const precio = formProducto.querySelector('input[name="precio"]').value;
-            const stock = formProducto.querySelector('input[name="stock"]').value;
-            let stockBadge = stock > 10 ? 'bg-success' : 'bg-danger';
+            const data = {
+                id: document.getElementById('prodId').value || null,
+                nombre: formProducto.querySelector('input[name="nombre"]').value,
+                categoria: formProducto.querySelector('select[name="categoria"]').value,
+                precio: parseFloat(formProducto.querySelector('input[name="precio"]').value),
+                stock: parseInt(formProducto.querySelector('input[name="stock"]').value),
+                disponible: true
+            };
 
-            // Edición vs Creación
-            const filaEditando = document.querySelector('tr.editando-ahora');
+            // Si tiene ID es PUT (Editar), si no es POST (Crear)
+            const metodo = data.id ? 'PUT' : 'POST';
+            const url = data.id ? `/api/productos/${data.id}` : '/api/productos';
 
-            if (filaEditando) {
-                // EDITAR
-                filaEditando.cells[1].innerText = nombre;
-                filaEditando.cells[2].innerText = categoria;
-                filaEditando.cells[3].innerText = "S/ " + parseFloat(precio).toFixed(2);
-                filaEditando.cells[4].innerHTML = `<span class="badge ${stockBadge}">${stock} un.</span>`;
-                filaEditando.classList.remove('editando-ahora');
-                document.querySelector('.modal-title').innerText = "Nuevo Producto";
-            } else {
-                // CREAR
-                const nuevaFila = `
-                    <tr>
-                        <td>#NEW</td>
-                        <td>${nombre}</td>
-                        <td>${categoria}</td>
-                        <td>S/ ${parseFloat(precio).toFixed(2)}</td>
-                        <td><span class="badge ${stockBadge}">${stock} un.</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary btn-editar"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger btn-eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tablaProductosBody.insertAdjacentHTML('beforeend', nuevaFila);
-            }
-
-            // Cerrar
-            formProducto.reset();
-            const modalElement = document.getElementById('modalProducto');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-            modalInstance.hide();
+            fetch(url, {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error("Error al guardar");
+            })
+            .then(() => {
+                alert("✅ Guardado correctamente");
+                // Cerrar modal
+                const modalElement = document.getElementById('modalProducto');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                // Recargar tabla
+                cargarProductos();
+            })
+            .catch(err => alert("❌ Error: " + err));
         });
     }
 });
 
-// FUNCIONES AUXILIARES
-function abrirModalEditar(btn) {
-    const fila = btn.closest('tr');
-    const modalElement = document.getElementById('modalProducto');
-    
-    // Cargar datos
-    modalElement.querySelector('input[name="nombre"]').value = fila.cells[1].innerText;
-    modalElement.querySelector('select[name="categoria"]').value = fila.cells[2].innerText;
-    modalElement.querySelector('input[name="precio"]').value = fila.cells[3].innerText.replace('S/ ', '').trim();
-    modalElement.querySelector('input[name="stock"]').value = fila.cells[4].innerText.replace(' un.', '').trim();
+// --- FUNCIONES AUXILIARES ---
 
-    // Marcar fila
-    document.querySelectorAll('tr').forEach(tr => tr.classList.remove('editando-ahora'));
-    fila.classList.add('editando-ahora');
-    
-    document.querySelector('.modal-title').innerText = "Editar Producto";
-    new bootstrap.Modal(modalElement).show();
+function cargarProductos() {
+    fetch('/api/productos')
+        .then(res => res.json())
+        .then(productos => {
+            const tbody = document.getElementById('tablaProductosBody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = ''; // Limpiar tabla
+            
+            productos.forEach(prod => {
+                const stockBadge = prod.stock > 10 ? 'bg-success' : 'bg-danger';
+                
+                // AQUÍ AGREGAMOS EL BOTÓN EDITAR (LÁPIZ)
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>#${prod.id}</td>
+                        <td>${prod.nombre}</td>
+                        <td>${prod.categoria}</td>
+                        <td>S/ ${prod.precio.toFixed(2)}</td>
+                        <td><span class="badge ${stockBadge}">${prod.stock} un.</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editarProducto(${prod.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${prod.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        });
 }
 
-function eliminarProducto(btn) {
-    if(confirm("¿Eliminar?")) btn.closest('tr').remove();
+function editarProducto(id) {
+    // 1. Pedir los datos del producto al servidor
+    fetch(`/api/productos/${id}`)
+        .then(res => res.json())
+        .then(prod => {
+            // 2. Llenar el formulario con esos datos
+            const form = document.getElementById('formProducto');
+            document.getElementById('prodId').value = prod.id; // IMPORTANTE: El ID oculto
+            form.querySelector('input[name="nombre"]').value = prod.nombre;
+            form.querySelector('select[name="categoria"]').value = prod.categoria;
+            form.querySelector('input[name="precio"]').value = prod.precio;
+            form.querySelector('input[name="stock"]').value = prod.stock;
+
+            // 3. Cambiar título del modal
+            document.querySelector('.modal-title').innerText = "Editar Producto";
+
+            // 4. Abrir el modal
+            new bootstrap.Modal(document.getElementById('modalProducto')).show();
+        });
+}
+
+function eliminarProducto(id) {
+    if(confirm("¿Seguro que deseas eliminar este producto?")) {
+        fetch(`/api/productos/${id}`, { method: 'DELETE' })
+            .then(res => {
+                if(res.ok) {
+                    cargarProductos();
+                } else {
+                    alert("Error al eliminar");
+                }
+            });
+    }
 }

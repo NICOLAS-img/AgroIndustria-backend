@@ -1,3 +1,4 @@
+// src/main/java/utp/AgroIndustria_Acora/repository/ComprobanteRepository.java
 package utp.AgroIndustria_Acora.repository;
 
 import java.util.List;

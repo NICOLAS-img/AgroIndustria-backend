@@ -1,27 +1,48 @@
-/* reportes.js - Configuración de Gráficos */
+/* reportes.js - Gráficos Mejorados */
 
 document.addEventListener("DOMContentLoaded", function() {
     
-    // --- 1. GRÁFICO DE BARRAS (VENTAS) ---
+    // --- 1. GRÁFICO DE BARRAS (VENTAS MENSUALES) ---
     const ctxVentas = document.getElementById('graficoVentas');
-    if (ctxVentas) {
+    
+    if (ctxVentas && typeof datosMesesJava !== 'undefined') {
+        
+        // Verificamos si hay datos, si todo es 0 ponemos un valor falso para probar
+        const hayDatos = datosMesesJava.some(valor => valor > 0);
+        
         new Chart(ctxVentas, {
-            type: 'bar',
+            type: 'bar', // Tipo barra se ve mejor cuando hay pocos datos
             data: {
-                labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
                 datasets: [{
                     label: 'Ventas en Soles (S/)',
-                    data: [8500, 9200, 10500, 11200, 9800, 12450], // Datos simulados
-                    backgroundColor: 'rgba(107, 142, 35, 0.6)', // Verde Aceituna transparente
-                    borderColor: 'rgba(107, 142, 35, 1)',
+                    data: datosMesesJava, 
+                    backgroundColor: 'rgba(25, 135, 84, 0.6)', // Verde éxito
+                    borderColor: 'rgba(25, 135, 84, 1)',
                     borderWidth: 1,
-                    borderRadius: 5
+                    borderRadius: 4
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return 'S/ ' + value; }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Venta: S/ ${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -29,33 +50,52 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- 2. GRÁFICO DE PASTEL (CATEGORÍAS) ---
     const ctxCat = document.getElementById('graficoCategorias');
-    if (ctxCat) {
+    
+    if (ctxCat && typeof catNombresJava !== 'undefined' && catNombresJava.length > 0) {
+        
         new Chart(ctxCat, {
-            type: 'doughnut', // Tipo "Dona"
+            type: 'doughnut', // Tipo dona es más moderno
             data: {
-                labels: ['Negras', 'Verdes', 'Aceites', 'Rellenas'],
+                labels: catNombresJava, 
                 datasets: [{
-                    data: [45, 25, 20, 10], // Porcentajes simulados
+                    data: catCantidadesJava,
                     backgroundColor: [
-                        '#2c3e50', // Oscuro
-                        '#6b8e23', // Verde Aceituna
-                        '#e67e22', // Naranja (Aceite)
-                        '#e74c3c'  // Rojo
+                        '#198754', // Verde principal
+                        '#ffc107', // Amarillo
+                        '#0d6efd', // Azul
+                        '#dc3545', // Rojo
+                        '#6f42c1', // Morado
+                        '#fd7e14'  // Naranja
                     ],
-                    borderWidth: 0
+                    borderWidth: 2,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: {
+                        position: 'right',
+                        labels: { boxWidth: 15, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.chart._metasets[context.datasetIndex].total;
+                                const valor = context.raw;
+                                const porcentaje = ((valor / total) * 100).toFixed(1) + '%';
+                                return `${context.label}: ${valor} un. (${porcentaje})`;
+                            }
+                        }
+                    }
                 }
             }
         });
+    } else {
+        // Si no hay datos, mostrar mensaje en consola (opcional)
+        console.log("No hay datos suficientes para el gráfico de categorías.");
     }
 });
 
-// Función para el botón imprimir
-function imprimirReporte() {
-    window.print();
-}
+function imprimirReporte() { window.print(); }

@@ -1,3 +1,4 @@
+// src/main/java/utp/AgroIndustria_Acora/modelo/Cliente.java
 package utp.AgroIndustria_Acora.modelo;
 
 import jakarta.persistence.*;

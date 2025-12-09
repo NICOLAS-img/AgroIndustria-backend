@@ -90,3 +90,24 @@ body {
     padding: 4rem 0;
     margin-top: 4rem;
 }
+/* --- HERO SECTION (PORTADA) --- */
+.hero-section {
+    /* Imagen de fondo de un olivar con un filtro oscuro encima */
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), 
+                url('https://www.almazarasancristobal.com/wp-content/uploads/almazara-san-cristobal-almazara-alicante.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 85vh; /* Ocupa el 85% de la altura de la pantalla */
+    min-height: 600px; /* Altura mínima para pantallas pequeñas */
+}
+
+/* --- SECCIÓN NOSOTROS --- */
+#nosotros .icon-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Evita que el círculo se deforme */
+}
