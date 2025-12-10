@@ -47,18 +47,19 @@ public class HomeController {
     public String adminDashboard(Model model) {
         model.addAttribute("totalEmpleados", empleadoService.contarEmpleados());
         model.addAttribute("totalInventario", productoService.sumarStockTotal());
-        model.addAttribute("totalStockBajo", productoService.contarStockBajo(5));
+        // Mantenemos la alerta en 11 para que coincida con el color rojo de la tabla
+        model.addAttribute("totalStockBajo", productoService.contarStockBajo(11));
         model.addAttribute("ventasHoy", pedidoService.sumarVentasHoy());
-        model.addAttribute("productosBajos", productoService.listarStockBajo(5));
+        model.addAttribute("productosBajos", productoService.listarStockBajo(11));
         model.addAttribute("empleados", empleadoService.listar());
         return "admindashboard";
     }
 
-    // --- REPORTES (GRÁFICOS) - AQUÍ ESTABA EL FALTANTE ---
+    // --- REPORTES (GRÁFICOS) ---
     @GetMapping("/admin/reportes")
     public String adminReportes(Model model) {
         
-        // 1. KPI Cards (Datos Superiores)
+        // 1. KPI Cards
         model.addAttribute("ventasMes", pedidoService.ventasMesActual());
         model.addAttribute("pedidosTotales", pedidoService.contarPedidosTotales());
         model.addAttribute("productoTop", detallePedidoService.productoMasVendido());
@@ -67,13 +68,12 @@ public class HomeController {
         // 2. Tabla Últimas Transacciones
         model.addAttribute("ultimosPedidos", pedidoService.obtenerUltimosPedidos());
 
-        // 3. Gráfico de Barras (Meses)
+        // 3. Gráfico de Barras
         List<Object[]> ventasMes = pedidoService.reporteVentasPorMes();
         Double[] montosMes = new Double[12];
         for(int i=0; i<12; i++) montosMes[i] = 0.0;
         
         for (Object[] fila : ventasMes) {
-            // Verificación segura para evitar errores si la fecha es nula
             if (fila[0] != null) {
                 int mes = ((Number) fila[0]).intValue() - 1;
                 if (mes >= 0 && mes < 12) montosMes[mes] = ((Number) fila[1]).doubleValue();
@@ -81,7 +81,7 @@ public class HomeController {
         }
         model.addAttribute("dataMeses", montosMes);
 
-        // 4. Gráfico de Pastel (Categorías)
+        // 4. Gráfico de Pastel
         List<Object[]> ventasCat = detallePedidoService.reporteVentasPorCategoria();
         List<String> catNombres = new ArrayList<>();
         List<Integer> catCantidades = new ArrayList<>();
@@ -96,24 +96,34 @@ public class HomeController {
         return "reportes";
     }
 
-    // --- REDIRECCIONES ---
+    // --- REDIRECCIONES MENÚ ADMIN ---
     @GetMapping("/admin/empleados") public String adminEmpleados() { return "redirect:/empleados"; }
     @GetMapping("/admin/productos") public String adminProductos() { return "productos"; }
+    // Ojo: La de clientes ahora tiene su propio controlador, pero esto no estorba.
+    
+    // --- DASHBOARDS EMPLEADOS ---
     @GetMapping("/cajero/dashboard") public String cajeroDashboard() { return "cajerodashboard"; }
     @GetMapping("/vendedor/dashboard") public String vendedorDashboard() { return "vendedordashboard"; }
 
     // --- PROCESAR LOGIN ---
     @PostMapping("/login")
     public String procesarLogin(@RequestParam("correo") String correo, @RequestParam("password") String password, HttpSession session, Model model) {
+        // Accesos Hardcoded (Admin/Staff)
         if (correo.equals("admin@acora.com") && password.equals("admin123")) {
             session.setAttribute("usuarioLogueado", "Administrador");
             return "redirect:/admin/dashboard";
         }
+        
+        // Acceso Clientes (BD)
         try {
             Cliente cliente = clienteService.autenticarCliente(correo, password);
             if (cliente != null) {
                 session.setAttribute("usuarioLogueado", cliente.getNombre());
-                session.setAttribute("idUsuario", cliente.getCliente_id());
+                
+                // --- AQUÍ ESTABA EL ERROR ---
+                // Antes: cliente.getCliente_id() -> Ahora: cliente.getId()
+                session.setAttribute("idUsuario", cliente.getId()); 
+                
                 return "redirect:/"; 
             } else {
                 model.addAttribute("error", "Credenciales incorrectas.");
@@ -140,25 +150,56 @@ public class HomeController {
             return "registro";
         }
     }
-    // ==========================================
-    // 7. VISTA CLIENTE: MIS PEDIDOS (¡NUEVO!)
-    // ==========================================
+
+    // --- MIS PEDIDOS (CLIENTE) ---
     @GetMapping("/mis-pedidos")
     public String misPedidos(HttpSession session, Model model) {
-        // 1. Validar seguridad: ¿Está logueado?
         Integer idUsuario = (Integer) session.getAttribute("idUsuario");
-        if (idUsuario == null) {
-            return "redirect:/login";
-        }
+        if (idUsuario == null) return "redirect:/login";
 
-        // 2. Buscar al cliente y sus pedidos
         Cliente cliente = clienteService.buscarPorId(idUsuario);
-        List<utp.AgroIndustria_Acora.modelo.Pedido> misCompras = pedidoService.buscarPorCliente(cliente);
-        
-        // 3. Enviar a la vista
-        model.addAttribute("misCompras", misCompras);
-        model.addAttribute("nombreUsuario", cliente.getNombre()); // Para el saludo
-        
+        if (cliente != null) {
+            model.addAttribute("misCompras", pedidoService.buscarPorCliente(cliente));
+            model.addAttribute("nombreUsuario", cliente.getNombre());
+        }
         return "mis_pedidos";
+    }
+    // ==========================================
+    // API PARA EL BOTÓN "VER DETALLE"
+    // ==========================================
+    @GetMapping("/api/pedido/{id}/detalles")
+    @ResponseBody
+    public List<utp.AgroIndustria_Acora.modelo.DetallePedido> obtenerDetalles(@PathVariable Long id) {
+        // Busca los productos de ese pedido específico
+        return detallePedidoService.listarPorPedidoId(id);
+    }
+    // ==========================================
+    // 9. FINAL: VOUCHER DE COMPRA EXITOSA
+    // ==========================================
+    @GetMapping("/compra-exitosa")
+    public String compraExitosa(HttpSession session, Model model) {
+        // 1. Validar que esté logueado
+        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+        if (idUsuario == null) return "redirect:/login";
+
+        // 2. Buscar al cliente
+        Cliente cliente = clienteService.buscarPorId(idUsuario);
+        
+        // 3. Buscar sus pedidos
+        List<utp.AgroIndustria_Acora.modelo.Pedido> pedidos = pedidoService.buscarPorCliente(cliente);
+        
+        if (pedidos.isEmpty()) {
+            return "redirect:/"; // Si no compró nada, pa' fuera
+        }
+        
+        // 4. Obtener EL ÚLTIMO pedido realizado (El que acaba de pagar)
+        // Como la lista suele venir en orden de creación, tomamos el último de la lista
+        utp.AgroIndustria_Acora.modelo.Pedido ultimoPedido = pedidos.get(pedidos.size() - 1);
+        
+        // 5. Cargar los detalles (productos) de ese pedido
+        model.addAttribute("pedido", ultimoPedido);
+        model.addAttribute("detalles", detallePedidoService.listarPorPedidoId(ultimoPedido.getId()));
+        
+        return "exito"; // Carga la vista exito.html
     }
 }

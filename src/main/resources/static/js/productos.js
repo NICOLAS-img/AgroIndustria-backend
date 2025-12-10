@@ -1,4 +1,4 @@
-/* productos.js - Gestión Completa con Edición */
+/* productos.js - Gestión Completa (Con Imagen y Descripción) */
 
 document.addEventListener("DOMContentLoaded", function() {
     const formProducto = document.getElementById('formProducto');
@@ -6,13 +6,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // 1. CARGAR PRODUCTOS AL INICIAR
     cargarProductos();
 
-    // 2. BOTÓN "NUEVO PRODUCTO" (Para limpiar el formulario)
-    // Busca el botón que abre el modal y agrégale un listener para limpiar
+    // 2. BOTÓN "NUEVO PRODUCTO" (Limpiar form)
     const btnNuevo = document.querySelector('[data-bs-target="#modalProducto"]');
     if(btnNuevo) {
         btnNuevo.addEventListener('click', () => {
             formProducto.reset();
-            document.getElementById('prodId').value = ''; // Limpiar ID oculto
+            document.getElementById('prodId').value = '';
             document.querySelector('.modal-title').innerText = "Nuevo Producto";
         });
     }
@@ -28,10 +27,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 categoria: formProducto.querySelector('select[name="categoria"]').value,
                 precio: parseFloat(formProducto.querySelector('input[name="precio"]').value),
                 stock: parseInt(formProducto.querySelector('input[name="stock"]').value),
+                // CAPTURAMOS LOS NUEVOS CAMPOS
+                imagen: formProducto.querySelector('input[name="imagen"]').value,
+                descripcion: formProducto.querySelector('textarea[name="descripcion"]').value,
                 disponible: true
             };
 
-            // Si tiene ID es PUT (Editar), si no es POST (Crear)
             const metodo = data.id ? 'PUT' : 'POST';
             const url = data.id ? `/api/productos/${data.id}` : '/api/productos';
 
@@ -45,12 +46,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 throw new Error("Error al guardar");
             })
             .then(() => {
-                alert("✅ Guardado correctamente");
-                // Cerrar modal
+                alert("✅ Producto guardado correctamente");
                 const modalElement = document.getElementById('modalProducto');
                 const modal = bootstrap.Modal.getInstance(modalElement);
                 modal.hide();
-                // Recargar tabla
                 cargarProductos();
             })
             .catch(err => alert("❌ Error: " + err));
@@ -72,11 +71,20 @@ function cargarProductos() {
             productos.forEach(prod => {
                 const stockBadge = prod.stock > 10 ? 'bg-success' : 'bg-danger';
                 
-                // AQUÍ AGREGAMOS EL BOTÓN EDITAR (LÁPIZ)
+                // Imagen por defecto si viene vacía
+                const imgUrl = (prod.imagen && prod.imagen !== '') ? prod.imagen : 'https://dummyimage.com/50x50/dee2e6/6c757d.jpg&text=IMG';
+
                 tbody.insertAdjacentHTML('beforeend', `
-                    <tr>
+                    <tr class="align-middle">
                         <td>#${prod.id}</td>
-                        <td>${prod.nombre}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${imgUrl}" class="rounded me-2 border" width="40" height="40" style="object-fit: cover;">
+                                <div>
+                                    <div class="fw-bold">${prod.nombre}</div>
+                                </div>
+                            </div>
+                        </td>
                         <td>${prod.categoria}</td>
                         <td>S/ ${prod.precio.toFixed(2)}</td>
                         <td><span class="badge ${stockBadge}">${prod.stock} un.</span></td>
@@ -95,22 +103,23 @@ function cargarProductos() {
 }
 
 function editarProducto(id) {
-    // 1. Pedir los datos del producto al servidor
     fetch(`/api/productos/${id}`)
         .then(res => res.json())
         .then(prod => {
-            // 2. Llenar el formulario con esos datos
             const form = document.getElementById('formProducto');
-            document.getElementById('prodId').value = prod.id; // IMPORTANTE: El ID oculto
+            document.getElementById('prodId').value = prod.id;
+            
+            // LLENAR TODOS LOS CAMPOS
             form.querySelector('input[name="nombre"]').value = prod.nombre;
             form.querySelector('select[name="categoria"]').value = prod.categoria;
             form.querySelector('input[name="precio"]').value = prod.precio;
             form.querySelector('input[name="stock"]').value = prod.stock;
+            
+            // Llenar Imagen y Descripción
+            form.querySelector('input[name="imagen"]').value = prod.imagen || '';
+            form.querySelector('textarea[name="descripcion"]').value = prod.descripcion || '';
 
-            // 3. Cambiar título del modal
             document.querySelector('.modal-title').innerText = "Editar Producto";
-
-            // 4. Abrir el modal
             new bootstrap.Modal(document.getElementById('modalProducto')).show();
         });
 }
@@ -122,7 +131,7 @@ function eliminarProducto(id) {
                 if(res.ok) {
                     cargarProductos();
                 } else {
-                    alert("Error al eliminar");
+                    alert("Error al eliminar (puede tener ventas asociadas)");
                 }
             });
     }

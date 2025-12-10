@@ -1,5 +1,5 @@
 package utp.AgroIndustria_Acora.controller;
-
+import java.time.ZoneId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,20 +41,46 @@ public class PedidoController {
             Integer idUsuario = (Integer) session.getAttribute("idUsuario");
             if (idUsuario == null) return "ERROR: Debes iniciar sesión para comprar.";
 
-            // 2. RECUPERAR DATOS
-            String direccion = datos.get("direccion").toString();
-            String tipoDoc = datos.get("tipoComprobante").toString(); 
-            String metodoPagoStr = datos.get("metodoPago").toString(); 
+            // 2. RECUPERAR DATOS (CON BLINDAJE ANTI-ERROR)
+            
+            // a) DIRECCIÓN: Si es null, usamos la del cliente
+            String direccion = null;
+            if (datos.get("direccion") != null) {
+                direccion = datos.get("direccion").toString();
+            }
+            
+            // Buscamos al cliente para tener sus datos a mano
+            Cliente cliente = clienteService.buscarPorId(idUsuario); 
+            
+            // Si no enviaron dirección, usamos la del perfil
+            if (direccion == null || direccion.trim().isEmpty()) {
+                direccion = cliente.getDireccion();
+            }
+
+            // b) TIPO COMPROBANTE (Por defecto BOLETA)
+            String tipoDoc = "BOLETA";
+            if (datos.get("tipoComprobante") != null) {
+                tipoDoc = datos.get("tipoComprobante").toString();
+            }
+
+            // c) MÉTODO DE PAGO (Por defecto TARJETA)
+            String metodoPagoStr = "TARJETA";
+            if (datos.get("metodoPago") != null) {
+                metodoPagoStr = datos.get("metodoPago").toString();
+            }
+
+            // d) TOTAL (BigDecimal como en tu código original)
             BigDecimal total = new BigDecimal(datos.get("total").toString());
 
             // 3. GUARDAR CABECERA PEDIDO
             Pedido pedido = new Pedido();
-            Cliente cliente = clienteService.buscarPorId(idUsuario); 
             pedido.setCliente(cliente);
             pedido.setDireccionEntrega(direccion);
-            pedido.setTotal(total);
+            pedido.setTotal(total.doubleValue()); // Tu modelo usa BigDecimal, así que le pasamos BigDecimal
             pedido.setEstado("PAGADO"); 
-            pedido.setFechaPedido(LocalDateTime.now());
+            pedido.setFechaPedido(LocalDateTime.now(ZoneId.of("America/Lima")));
+            pedido.setTipoComprobante(tipoDoc);     // Guardamos boleta/factura
+            pedido.setMetodoPago(metodoPagoStr);    // Guardamos yape/tarjeta
             
             Pedido pedidoGuardado = pedidoService.guardar(pedido);
 
@@ -62,9 +88,11 @@ public class PedidoController {
             List<Map<String, Object>> productos = (List<Map<String, Object>>) datos.get("productos");
             
             for (Map<String, Object> item : productos) {
+                // Usamos Long como en tu código original
                 Long prodId = Long.valueOf(item.get("id").toString());
                 int cantidad = Integer.parseInt(item.get("cantidad").toString());
                 
+                // Usamos .orElse(null) porque tu servicio devuelve Optional
                 Producto prodBD = productoService.buscarPorId(prodId).orElse(null);
                 
                 if (prodBD != null) {
@@ -73,24 +101,25 @@ public class PedidoController {
                         throw new RuntimeException("Stock insuficiente para: " + prodBD.getNombre());
                     }
 
-                    // --- ¡AQUÍ ESTÁ LA MAGIA! RESTAMOS EL STOCK ---
+                    // --- RESTAMOS EL STOCK ---
                     int nuevoStock = prodBD.getStock() - cantidad;
                     prodBD.setStock(nuevoStock);
                     
-                    // Si llega a 0, lo ponemos como NO disponible automáticamente
                     if(nuevoStock == 0) {
                         prodBD.setDisponible(false);
                     }
                     
-                    // Guardamos el producto con el nuevo stock en la BD
                     productoService.guardar(prodBD);
 
-                    // --- Guardamos el detalle de la venta ---
+                    // --- Guardamos el detalle ---
                     DetallePedido detalle = new DetallePedido();
                     detalle.setPedido(pedidoGuardado);
                     detalle.setProducto(prodBD);
                     detalle.setCantidad(cantidad);
-                    detalle.setPrecioUnitario(prodBD.getPrecio());
+                    
+                    // Usamos tus nombres de campo originales (precioUnitario, subtotal)
+                    // Asumiendo que getPrecio() devuelve BigDecimal. Si devuelve Double, avísame.
+                    detalle.setPrecioUnitario(prodBD.getPrecio()); 
                     detalle.setSubtotal(prodBD.getPrecio().multiply(new BigDecimal(cantidad)));
                     
                     detallePedidoService.guardar(detalle);
@@ -122,7 +151,7 @@ public class PedidoController {
             return "OK";
 
         } catch (Exception e) {
-            e.printStackTrace(); // Ver error en consola
+            e.printStackTrace();
             return "ERROR: " + e.getMessage();
         }
     }

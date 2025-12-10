@@ -1,4 +1,4 @@
-/* shop.js - Lógica Final: Carrito, Yape y Facturación */
+/* shop.js - Carrito, Pagos y Redirección a Voucher */
 
 let carrito = [];
 
@@ -59,16 +59,9 @@ function eliminarItem(index) { carrito.splice(index, 1); actualizarVistaCarrito(
 // --- LÓGICA DE PAGO ---
 
 function abrirPasarela() {
-    // 1. Cerrar carrito
     bootstrap.Modal.getInstance(document.getElementById('modalCarrito')).hide();
-    
-    // 2. Pasar total al modal de pago
     document.getElementById('pagoTotal').innerText = "S/ " + document.getElementById('cartTotal').innerText;
-    
-    // 3. Abrir modal pago
     new bootstrap.Modal(document.getElementById('modalPago')).show();
-    
-    // 4. Iniciar simulación Yape automáticamente
     iniciarSimulacionYape();
 }
 
@@ -76,41 +69,36 @@ function iniciarSimulacionYape() {
     const status = document.getElementById('yapeStatus');
     const btn = document.getElementById('btnConfirmarYape');
     
-    // Estado inicial: Esperando
     status.className = "mt-3 text-warning fw-bold small";
     status.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Esperando escaneo...';
     btn.disabled = true;
 
-    // A los 3 segundos -> Pago detectado
     setTimeout(() => {
-        // Verificar si el modal sigue abierto (para evitar errores si el usuario lo cerró)
         if(document.getElementById('modalPago').classList.contains('show')) {
             status.className = "mt-3 text-success fw-bold small";
             status.innerHTML = '<i class="bi bi-check-circle-fill"></i> ¡Pago Detectado!';
-            btn.disabled = false; // ¡AQUÍ SE ACTIVA EL BOTÓN!
+            btn.disabled = false;
         }
     }, 3000);
 }
 
 function finalizarCompra(metodo) {
     const totalTexto = document.getElementById('pagoTotal').innerText.replace('S/ ', '').trim();
-    // Capturar lo que eligió el cliente
     const tipoComprobante = document.getElementById('tipoComprobante').value;
 
     const orden = {
         total: parseFloat(totalTexto),
-        direccion: "Dirección del Cliente", // Podrías agregar un input para esto
-        tipoComprobante: tipoComprobante,   // BOLETA o FACTURA
-        metodoPago: metodo,                 // YAPE o TARJETA
+        // CORRECCIÓN 1: Enviamos null para que el backend use la dirección real del usuario
+        direccion: null, 
+        tipoComprobante: tipoComprobante, // BOLETA o FACTURA
+        metodoPago: metodo,               // YAPE o TARJETA
         productos: carrito.map(i => ({ id: i.id, cantidad: i.cantidad }))
     };
 
-    // Feedback visual en el botón
     const btnId = metodo === 'YAPE' ? 'btnConfirmarYape' : 'btnPayCard';
     const btn = document.getElementById(btnId);
-    if(btn) { btn.disabled = true; btn.innerText = "Generando pedido..."; }
+    if(btn) { btn.disabled = true; btn.innerText = "Procesando..."; }
 
-    // Enviar al Backend
     fetch('/pedidos/guardar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -119,10 +107,16 @@ function finalizarCompra(metodo) {
     .then(r => r.text())
     .then(resp => {
         if(resp === "OK") {
-            alert(`✅ ¡COMPRA EXITOSA!\n\nSe ha generado su ${tipoComprobante} y el pedido ha sido registrado.`);
+            const modalPagoEl = document.getElementById('modalPago');
+            const modalPago = bootstrap.Modal.getInstance(modalPagoEl);
+            if(modalPago) modalPago.hide();
+
             carrito = [];
             actualizarVistaCarrito();
-            location.reload();
+            
+            // REDIRECCIÓN AL VOUCHER
+            window.location.href = "/compra-exitosa"; 
+            
         } else {
             alert("❌ Error: " + resp);
             if(btn) { btn.disabled = false; btn.innerText = metodo === 'YAPE' ? "CONFIRMAR PAGO" : "PAGAR AHORA"; }
@@ -131,14 +125,13 @@ function finalizarCompra(metodo) {
     .catch(err => {
         console.error(err);
         alert("Error de conexión");
+        if(btn) btn.disabled = false;
     });
 }
 
 function procesarTarjeta() { finalizarCompra('TARJETA'); }
-// ... al final de shop.js ...
 
 function irALogin() {
-    // Opcional: Podrías guardar un mensaje para mostrarlo en el login
     alert("🔒 Para añadir productos, primero debes iniciar sesión.");
     window.location.href = "/login";
 }

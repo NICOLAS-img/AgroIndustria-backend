@@ -18,6 +18,7 @@
         </div>
         <a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Resumen</a>
         <a href="/admin/dashboard#gestion-empleados"><i class="bi bi-people-fill"></i> Empleados</a>
+        <a href="/admin/clientes" class="nav-link"><i class="bi bi-person-lines-fill"></i> Clientes</a>
         <a href="#" class="active"><i class="bi bi-box-seam"></i> Productos</a>
         <a href="/admin/reportes"><i class="bi bi-file-earmark-text"></i> Reportes</a>
         <div class="mt-5 border-top border-secondary pt-3">
@@ -84,39 +85,55 @@
                 </div>
                 <div class="modal-body">
                     <form id="formProducto">
-                        <input type="hidden" name="id" id="prodId">
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small">Nombre del Producto</label>
-                            <input type="text" class="form-control" name="nombre" placeholder="Ej. Aceituna Botija" required>
-                        </div>
+    <input type="hidden" name="id" id="prodId">
+    
+    <div class="row">
+        <div class="col-8 mb-3">
+            <label class="form-label fw-bold small">Nombre del Producto</label>
+            <input type="text" class="form-control" name="nombre" placeholder="Ej. Aceituna Botija" required>
+        </div>
+        <div class="col-4 mb-3">
+            <label class="form-label fw-bold small">Precio (S/)</label>
+            <input type="number" step="0.01" class="form-control" name="precio" placeholder="0.00" required>
+        </div>
+    </div>
 
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label fw-bold small">Categoría</label>
-                                <select class="form-select" name="categoria" required>
-                                    <option value="Negras">Negras</option>
-                                    <option value="Verdes">Verdes</option>
-                                    <option value="Aceites">Aceites</option>
-                                    <option value="Rellenas">Rellenas</option>
-                                    <option value="Packs">Packs</option> <option value="Otros">Otros</option>
-                                </select>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label fw-bold small">Precio (S/)</label>
-                                <input type="number" step="0.01" class="form-control" name="precio" placeholder="0.00" required>
-                            </div>
-                        </div>
+    <div class="row">
+        <div class="col-6 mb-3">
+            <label class="form-label fw-bold small">Categoría</label>
+            <select class="form-select" name="categoria" required>
+                <option value="Negras">Negras</option>
+                <option value="Verdes">Verdes</option>
+                <option value="Aceites">Aceites</option>
+                <option value="Rellenas">Rellenas</option>
+                <option value="Packs">Packs</option>
+                <option value="Otros">Otros</option>
+            </select>
+        </div>
+        <div class="col-6 mb-3">
+            <label class="form-label fw-bold small">Stock Inicial</label>
+            <input type="number" class="form-control" name="stock" placeholder="Cantidad" required>
+        </div>
+    </div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small">Stock Inicial</label>
-                            <input type="number" class="form-control" name="stock" placeholder="Cantidad disponible" required>
-                        </div>
+    <div class="mb-3">
+        <label class="form-label fw-bold small">URL de la Imagen</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-image"></i></span>
+            <input type="text" class="form-control" name="imagen" placeholder="Pega aquí el link de la foto (https://...)" required>
+        </div>
+        <div class="form-text small">Puedes usar un link de internet o una ruta local (ej: /img/foto.jpg)</div>
+    </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-crear">Guardar Producto</button>
-                        </div>
-                    </form>
+    <div class="mb-4">
+        <label class="form-label fw-bold small">Descripción del Producto</label>
+        <textarea class="form-control" name="descripcion" rows="3" placeholder="Ej. Aceituna curada en salmuera..."></textarea>
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn btn-crear">Guardar Producto</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>

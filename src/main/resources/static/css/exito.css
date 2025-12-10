@@ -1,0 +1,54 @@
+/* exito.css - Estilos del Voucher */
+
+body {
+    background-color: #f8f9fa;
+}
+
+.voucher-container {
+    max-width: 500px; /* Ancho tipo recibo */
+    margin: 0 auto;
+}
+
+.card-voucher {
+    border: none;
+    background: #fff;
+    position: relative;
+    /* Efecto de borde dentado (opcional, pero se ve pro) */
+    background-image: radial-gradient(circle at 10px -5px, transparent 12px, white 13px);
+    background-size: 20px 20px;
+    background-repeat: repeat-x;
+}
+
+.voucher-header {
+    border-bottom: 2px dashed #e9ecef;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.voucher-footer {
+    border-top: 2px dashed #e9ecef;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* TRUCO DE MAGIA: ESTILOS PARA IMPRESIÓN (PDF) */
+@media print {
+    /* Ocultar todo lo que no sea el voucher */
+    .no-print, nav, footer, .btn {
+        display: none !important;
+    }
+    
+    body {
+        background-color: white;
+    }
+    
+    .voucher-container {
+        max-width: 100%;
+        margin: 0;
+        box-shadow: none !important;
+    }
+    
+    .card-voucher {
+        border: 1px solid #ccc; /* Borde simple para impresión */
+    }
+}
